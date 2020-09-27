@@ -35,7 +35,7 @@ public class Codepoint {
 	}
 
 	public String toUTF32() {
-		return "";
+		return this.hexString;
 	}
 
 	public String toUTF16() {
