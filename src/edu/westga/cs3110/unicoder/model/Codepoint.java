@@ -68,12 +68,6 @@ public class Codepoint {
 		return hexStringUTF8;
 	}
 
-//	private int decodeHexString() {
-//		String decodeableHexString = "0x" + this.hexString;
-//		return Integer.decode(decodeableHexString);
-//		
-//	}
-
 	private boolean checkIfHexStringIsOneByteUTF8() {
 		return this.decodedHex >= 0 && this.decodedHex <= 0x007f;
 	}
@@ -95,13 +89,6 @@ public class Codepoint {
 		return this.decodedHex >= 0xd800 && this.decodedHex <= 0xdfff;
 	}
 
-//	private boolean checkIfHexStringIsFourBytesUTF8() {
-//		return this.decodedHex >= 0x10000 && this.decodedHex <= 0x10ffff;
-//	}
-
-//	private boolean checkIfUTF16FourBytes() {
-//	return false;
-//}
 	private String encodeUTF8OneByte() {
 		int oneByteEncoding = this.decodedHex & 0b000000000000111111111;
 		String encodedString = String.format("%X", oneByteEncoding);
@@ -125,7 +112,7 @@ public class Codepoint {
 	private String encodeUTF8ThreeBytes() {
 		int upperFourBits = this.decodedHex >> 12;
 		int middleSixBits = this.decodedHex >> 6;
-		middleSixBits = this.decodedHex & 0b0000000000111111;
+		middleSixBits = middleSixBits & 0b0000000000111111;
 		int lowerSixBits = this.decodedHex & 0b0000000000111111;
 
 		int upperThreeByteEncoding = 0b11100000 | upperFourBits;
