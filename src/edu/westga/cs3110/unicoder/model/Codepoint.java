@@ -157,13 +157,13 @@ public class Codepoint {
 	private String encodeUTF16FourBytes() {
 		int workableHex = this.decodedHex - 0x10000;
 		
-		int firstHalfOfBits = workableHex >> 10;
+		int firstHalfOfBits = workableHex >>> 10;
 		int secondHalfOfBits = workableHex & 0b00000000001111111111;
 		
 		int highSurrogate = 0xD800 + firstHalfOfBits;
 		int lowSurrogate = 0xDC00 + secondHalfOfBits;
 		
-		int fullFourByteEncoding = (highSurrogate << 10) | lowSurrogate;
+		int fullFourByteEncoding = highSurrogate << 16 | lowSurrogate;
 		
 		String encodedString = String.format("%X", fullFourByteEncoding);
 		
