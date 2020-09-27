@@ -30,14 +30,36 @@ public class Codepoint {
 		this.decodedHex = Integer.parseUnsignedInt(this.hexString, 16);
 	}
 
+	/**
+	 * Gets the string representation of the hexadecimal codepoint.
+	 * 
+	 * @precondition none
+	 * @postcondition none
+	 * @return the string representation of the hexadecimal codepoint
+	 */
 	public String getHexString() {
 		return this.hexString;
 	}
 
+	/**
+	 * Computes the codepoint into its four byte UTF-32 value.
+	 * 
+	 * @precondition none
+	 * @postcondition none
+	 * 
+	 * @return the UTF-32 value.
+	 */
 	public String toUTF32() {
 		return this.hexString;
 	}
 
+	/**
+	 * Computes the codepoint into its two or four byte UTF-16 value.
+	 * 
+	 * @precondition getHexString() cannot be between 0xd800 and 0xdffff
+	 * @postcondition none
+	 * @return the UTF-16 value
+	 */
 	public String toUTF16() {
 		if (this.checkIfUTF16TwoBytesForbiddenZone()) {
 			throw new IllegalArgumentException(Codepoint.UTF_16_NOT_ALLOWED);
@@ -52,7 +74,13 @@ public class Codepoint {
 
 		return encodedString;
 	}
-
+/**
+ * Computes the codepoint into its one, two, three, or four byte UTF-8 value.
+ * 
+ * @precondition none
+ * @postcondition none
+ * @return the UTF-8 value
+ */
 	public String toUTF8() {
 		String hexStringUTF8 = "";
 		if (this.checkIfHexStringIsOneByteUTF8()) {
