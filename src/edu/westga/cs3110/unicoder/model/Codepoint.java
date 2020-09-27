@@ -43,13 +43,13 @@ public class Codepoint {
 			throw new IllegalArgumentException(Codepoint.UTF_16_NOT_ALLOWED);
 		}
 		String encodedString = "";
-		
-		if(this.checkIfUTF16TwoBytes()) {
+
+		if (this.checkIfUTF16TwoBytes()) {
 			encodedString = this.encodeUTF16TwoBytes();
 		} else {
 			encodedString = this.encodeUTF16FourBytes();
 		}
-		
+
 		return encodedString;
 	}
 
@@ -85,14 +85,12 @@ public class Codepoint {
 	private boolean checkIfHexStringIsThreeBytesUTF8() {
 		return this.decodedHex >= 0x0800 && this.decodedHex <= 0xffff;
 	}
-	
+
 	private boolean checkIfUTF16TwoBytes() {
 		return (this.decodedHex >= 0x0000 && this.decodedHex <= 0xD7FF)
 				|| (this.decodedHex >= 0xE000 && this.decodedHex <= 0xFFFF);
 	}
 
-
-	
 	private boolean checkIfUTF16TwoBytesForbiddenZone() {
 		return this.decodedHex >= 0xd800 && this.decodedHex <= 0xdfff;
 	}
@@ -168,10 +166,21 @@ public class Codepoint {
 	private String encodeUTF16TwoBytes() {
 		return this.hexString;
 	}
-	
-	private String encodeUTF16FourBytes() {		
-		return "";
-	}
 
+	private String encodeUTF16FourBytes() {
+		int workableHex = this.decodedHex - 0x10000;
+		
+		int firstHalfOfBits = workableHex >> 10;
+		int secondHalfOfBits = workableHex & 0b00000000001111111111;
+		
+		int highSurrogate = 0xD800 + firstHalfOfBits;
+		int lowSurrogate = 0xDC00 + secondHalfOfBits;
+		
+		int fullFourByteEncoding = (highSurrogate << 10) | lowSurrogate;
+		
+		String encodedString = String.format("%X", fullFourByteEncoding);
+		
+		return encodedString;
+	}
 
 }
