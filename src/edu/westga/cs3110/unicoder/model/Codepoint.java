@@ -7,6 +7,7 @@ package edu.westga.cs3110.unicoder.model;
  *
  */
 public class Codepoint {
+	private static final String UTF_16_NOT_ALLOWED = "Hex string is within the range that cannot be translated to UTF-16. Please try again with a new code point.";
 	private String hexString;
 	private int decodedHex;
 
@@ -38,7 +39,18 @@ public class Codepoint {
 	}
 
 	public String toUTF16() {
-		return "";
+		if (this.checkIfUTF16TwoBytesForbiddenZone()) {
+			throw new IllegalArgumentException(Codepoint.UTF_16_NOT_ALLOWED);
+		}
+		String encodedString = "";
+		
+		if(this.checkIfUTF16TwoBytes()) {
+			encodedString = this.encodeUTF16TwoBytes();
+		} else {
+			encodedString = this.encodeUTF16FourBytes();
+		}
+		
+		return encodedString;
 	}
 
 	public String toUTF8() {
@@ -73,28 +85,42 @@ public class Codepoint {
 	private boolean checkIfHexStringIsThreeBytesUTF8() {
 		return this.decodedHex >= 0x0800 && this.decodedHex <= 0xffff;
 	}
+	
+	private boolean checkIfUTF16TwoBytes() {
+		return (this.decodedHex >= 0x0000 && this.decodedHex <= 0xD7FF)
+				|| (this.decodedHex >= 0xE000 && this.decodedHex <= 0xFFFF);
+	}
+
+
+	
+	private boolean checkIfUTF16TwoBytesForbiddenZone() {
+		return this.decodedHex >= 0xd800 && this.decodedHex <= 0xdfff;
+	}
 
 //	private boolean checkIfHexStringIsFourBytesUTF8() {
 //		return this.decodedHex >= 0x10000 && this.decodedHex <= 0x10ffff;
 //	}
 
+//	private boolean checkIfUTF16FourBytes() {
+//	return false;
+//}
 	private String encodeUTF8OneByte() {
 		int oneByteEncoding = this.decodedHex & 0b000000000000111111111;
 		String encodedString = String.format("%X", oneByteEncoding);
-		
+
 		return encodedString;
 	}
 
 	private String encodeUTF8TwoBytes() {
 		int upperFiveBits = this.decodedHex >> 6;
 		int lowerSixBits = this.decodedHex & 0b00000111111;
-		
+
 		int upperTwoByteEncoding = 0b11000000 | upperFiveBits;
 		int lowerTwoByteEncoding = 0b10000000 | lowerSixBits;
-		
+
 		int fullTwoByteEncoding = (upperTwoByteEncoding << 8) | lowerTwoByteEncoding;
 		String encodedString = String.format("%X", fullTwoByteEncoding);
-		
+
 		return encodedString;
 	}
 
@@ -103,16 +129,16 @@ public class Codepoint {
 		int middleSixBits = this.decodedHex >> 6;
 		middleSixBits = this.decodedHex & 0b0000000000111111;
 		int lowerSixBits = this.decodedHex & 0b0000000000111111;
-		
+
 		int upperThreeByteEncoding = 0b11100000 | upperFourBits;
 		int middleThreeByteEncoding = 0b10000000 | middleSixBits;
 		int lowerThreeBitsEncoding = 0b10000000 | lowerSixBits;
-		
+
 		int fullThreeByteEncoding = (upperThreeByteEncoding << 8) | middleThreeByteEncoding;
 		fullThreeByteEncoding = (fullThreeByteEncoding << 8) | lowerThreeBitsEncoding;
-		
+
 		String encodedString = String.format("%X", fullThreeByteEncoding);
-		
+
 		return encodedString;
 	}
 
@@ -123,18 +149,29 @@ public class Codepoint {
 		int thirdQuarterOfBits = this.decodedHex >> 6;
 		thirdQuarterOfBits = thirdQuarterOfBits & 0b000000000000000111111;
 		int fourthQuarterOfBits = this.decodedHex & 0b000000000000000111111;
-		
+
 		int firstQuarterFourByteEncoding = 0b11110000 | firstQuarterOfBits;
 		int secondQuarterFourByteEncoding = 0b10000000 | secondQuarterOfBits;
 		int thirdQuarterFourByteEncoding = 0b10000000 | thirdQuarterOfBits;
 		int fourthQuarterFourByteEncoding = 0b10000000 | fourthQuarterOfBits;
-		
+
 		long fullFourByteEncoding = (firstQuarterFourByteEncoding << 8) | secondQuarterFourByteEncoding;
 		fullFourByteEncoding = (fullFourByteEncoding << 8) | thirdQuarterFourByteEncoding;
 		fullFourByteEncoding = (fullFourByteEncoding << 8) | fourthQuarterFourByteEncoding;
-		
+
 		String encodedString = String.format("%X", fullFourByteEncoding);
-		
+
 		return encodedString;
+
 	}
+
+	private String encodeUTF16TwoBytes() {
+		return this.hexString;
+	}
+	
+	private String encodeUTF16FourBytes() {		
+		return "";
+	}
+
+
 }
