@@ -74,13 +74,14 @@ public class Codepoint {
 
 		return encodedString;
 	}
-/**
- * Computes the codepoint into its one, two, three, or four byte UTF-8 value.
- * 
- * @precondition none
- * @postcondition none
- * @return the UTF-8 value
- */
+
+	/**
+	 * Computes the codepoint into its one, two, three, or four byte UTF-8 value.
+	 * 
+	 * @precondition none
+	 * @postcondition none
+	 * @return the UTF-8 value
+	 */
 	public String toUTF8() {
 		String hexStringUTF8 = "";
 		if (this.checkIfHexStringIsOneByteUTF8()) {
@@ -120,6 +121,10 @@ public class Codepoint {
 	private String encodeUTF8OneByte() {
 		int oneByteEncoding = this.decodedHex & 0b000000000000111111111;
 		String encodedString = String.format("%X", oneByteEncoding);
+
+		if (encodedString.length() < 2) {
+			encodedString = "0" + encodedString;
+		}
 
 		return encodedString;
 	}
@@ -184,17 +189,17 @@ public class Codepoint {
 
 	private String encodeUTF16FourBytes() {
 		int workableHex = this.decodedHex - 0x10000;
-		
+
 		int firstHalfOfBits = workableHex >>> 10;
 		int secondHalfOfBits = workableHex & 0b00000000001111111111;
-		
+
 		int highSurrogate = 0xD800 + firstHalfOfBits;
 		int lowSurrogate = 0xDC00 + secondHalfOfBits;
-		
+
 		int fullFourByteEncoding = highSurrogate << 16 | lowSurrogate;
-		
+
 		String encodedString = String.format("%X", fullFourByteEncoding);
-		
+
 		return encodedString;
 	}
 

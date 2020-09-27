@@ -11,7 +11,7 @@ import edu.westga.cs3110.unicoder.model.Codepoint;
 class TestToUTF8 {
 
 	@ParameterizedTest
-	@CsvSource({ "0000, 0, At lower bound", "0001, 1, One above lower bound", "007E, 7E, One below upper bound", "007F, 7F, At upper bound" })
+	@CsvSource({ "0000, 00, At lower bound", "0001, 01, One above lower bound", "007E, 7E, One below upper bound", "007F, 7F, At upper bound" })
 	void testHexStringAtOneByte(String hexString, String expected, String message) {
 		Codepoint testingPoint = new Codepoint(hexString);
 		String result = testingPoint.toUTF8();
